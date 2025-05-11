@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Restaurant Menu</title>
+  <style>
+    body {
+      background: #f8f9fa;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .menu-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+    .card {
+      width: 260px;
+      background: white;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: transform 0.2s ease;
+      position: relative;
+    }
+    .card:hover {
+      transform: scale(1.03);
+    }
+    .card img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+    }
+    .card-body {
+      padding: 15px;
+    }
+    .card h2 {
+      font-size: 20px;
+      margin: 0 0 5px;
+    }
+    .desc {
+      font-size: 14px;
+      color: #555;
+      min-height: 45px;
+    }
+    .price {
+      font-size: 18px;
+      color: #28a745;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    .tags {
+      margin-top: 10px;
+      font-size: 13px;
+    }
+    .tag {
+      background: #e9ecef;
+      border-radius: 5px;
+      padding: 2px 8px;
+      margin-right: 5px;
+      display: inline-block;
+    }
+    .unavailable {
+      opacity: 0.5;
+      filter: grayscale(60%);
+      position: relative;
+    }
+    .unavailable::after {
+      content: "Unavailable";
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(255, 0, 0, 0.8);
+      color: white;
+      padding: 3px 8px;
+      font-size: 12px;
+      border-radius: 4px
+    }
+
+    .cart-button {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #28a745;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body>
+  <a href="{% url 'view_cart' table.id %}" class="cart-button">🛒 View Cart</a>
+  <a href="{% url 'tables' %}" class="cart-button" style="right: 150px; background: #007bff;">⬅️ Back to Tables</a>
+  <h1>Menu for Table {{ table.number }}</h1>
+  <div class="menu-grid">
+    {% for item in menu_items %}
+    <form action="{% url 'add_to_cart' table.id item.id %}" method="POST" class="card {% if not item.is_available %}unavailable{% endif %}">
+      {% csrf_token %}
+      <img src="{{ item.image_url }}" alt="{{ item.name }}">
+      <div class="card-body">
+        <h2>{{ item.name }}</h2>
+        <p class="desc">{{ item.description }}</p>
+        <div class="price">${{ item.price }}</div>
+        <input type="number" name="quantity" value="1" min="1" required>
+        <input type="text" name="note" placeholder="Add a note (optional)">
+        <button type="submit" {% if not item.is_available %}disabled{% endif %}>Add to Cart</button>
+      </div>
+    </form>
+    {% endfor %}
+  </div>
+</body>
+</html>

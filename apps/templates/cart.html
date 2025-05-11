@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>🧾 Cart Summary - Table {{ table_id }}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 40px;
+            background-color: #f9f9f9;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            background: white;
+            border-collapse: collapse;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 14px 20px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .actions {
+            text-align: right;
+        }
+
+        .summary {
+            margin-top: 30px;
+            text-align: right;
+        }
+
+        .summary div {
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .total {
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            background-color: #dc3545;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .btn:hover {
+            background-color: #c82333;
+        }
+
+        .place-order {
+            margin-top: 20px;
+            background-color: #28a745;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 18px;
+            text-decoration: none;
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        .place-order:hover {
+            background-color: #218838;
+        }
+
+        .back-btn {
+            background-color: #007bff;
+            padding: 12px 25px;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 18px;
+        }
+
+        .back-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+<h1>🧾 Order Summary for Table {{ table_id }}</h1>
+
+{% if cart %}
+<table>
+    <tr>
+        <th>Meal</th>
+        <th>Note</th>
+        <th>Quantity</th>
+        <th>Price</th>
+        <th>Subtotal</th>
+        <th>Action</th>
+    </tr>
+    {% for key, item in cart.items %}
+    <tr>
+        <td>{{ item.name }}</td>
+        <td>{{ item.note|default:"-" }}</td>
+        <td>{{ item.quantity }}</td>
+        <td>${{ item.price }}</td>
+        <td>${{ item.total|floatformat:2 }}</td>
+        <td class="actions">
+            <a href="{% url 'remove_from_cart' table_id key %}" class="btn">Remove</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<div class="summary">
+    <div>Subtotal: ${{ subtotal|floatformat:2 }}</div>
+    <div>Service Charge (15%): ${{ service_charge|floatformat:2 }}</div>
+    <div class="total">Total: ${{ total|floatformat:2 }}</div>
+</div>
+
+<div style="text-align: right; margin-top: 20px;">
+    <a href="{% url 'menu' table_id %}" class="back-btn">🔙 Go Back to Menu</a>
+    <a href="{% url 'place_order' table_id %}" class="place-order">✅ Place Order</a>
+</div>
+{% else %}
+<p style="text-align: center;">🛒 Your cart is empty.</p>
+<div style="text-align: center; margin-top: 20px;">
+    <a href="{% url 'menu' table_id %}" class="back-btn">🔙 Back to Menu</a>
+</div>
+{% endif %}
+
+</body>
+</html>
